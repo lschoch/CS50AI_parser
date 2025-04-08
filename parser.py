@@ -23,7 +23,6 @@ NP -> N | Det NP | AP NP | Det AP NP
 PP -> P NP | P NP PP | P NP VP | P NP Adv
 VP -> V | V NP | Adv V NP PP | V Adv | Adv V | V NP PP | V PP | Adv V NP
 """
-# She never said a word until we were at the door here.
 grammar = nltk.CFG.fromstring(NONTERMINALS + TERMINALS)
 parser = nltk.ChartParser(grammar)
 
@@ -73,6 +72,7 @@ def preprocess(sentence):
     word_list = [w.lower() for w in word_list if re.match('[A-Za-z]+', w)]
     return word_list
 
+
 def np_chunk(tree):
     """
     Return a list of all noun phrase chunks in the sentence tree.
@@ -87,6 +87,7 @@ def np_chunk(tree):
         if t.height() <= 4:
             npcs.append(t)
     return npcs
-               
+
+
 if __name__ == "__main__":
     main()
