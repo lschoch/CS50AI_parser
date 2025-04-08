@@ -19,7 +19,7 @@ NONTERMINALS = """
 S -> NP VP | NP VP Conj NP VP | NP VP Conj VP
 
 AP -> Adj | Adj AP
-NP -> N | Det N | AP NP | Det AP NP | N PP 
+NP -> N | Det NP | AP NP | Det AP NP
 PP -> P NP | P NP PP | P NP VP | P NP Adv
 VP -> V | V NP | Adv V NP PP | V Adv | Adv V | V NP PP | V PP | Adv V NP
 """
@@ -84,7 +84,7 @@ def np_chunk(tree):
     # Step through subtrees with label 'NP'.
     for t in tree.subtrees(lambda x: x.label() == 'NP'):
         # Noun chunks are trees with height 3.
-        if t.height() == 3:
+        if t.height() <= 4:
             npcs.append(t)
     return npcs
                
