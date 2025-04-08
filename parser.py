@@ -16,12 +16,12 @@ V -> "smiled" | "tell" | "were"
 """
 
 NONTERMINALS = """
-S -> NP VP | NP VP Conj VP
+S -> NP VP | NP VP Conj NP VP | NP VP Conj VP
 
 AP -> Adj | Adj AP
 NP -> N | Det N | AP NP | Det AP NP | N PP 
-PP -> P NP | P NP PP | P NP VP
-VP -> V | V NP | Adv V NP PP | V Adv | Adv V
+PP -> P NP | P NP PP | P NP VP | P NP Adv
+VP -> V | V NP | Adv V NP PP | V Adv | Adv V | V NP PP | V PP | Adv V NP
 """
 # She never said a word until we were at the door here.
 grammar = nltk.CFG.fromstring(NONTERMINALS + TERMINALS)
@@ -54,7 +54,7 @@ def main():
 
     # Print each tree with noun phrase chunks
     for tree in trees:
-        # tree.pretty_print()
+        tree.pretty_print()
 
         print("Noun Phrase Chunks")
         for np in np_chunk(tree):
@@ -81,13 +81,11 @@ def np_chunk(tree):
     noun phrases as subtrees.
     """
     npcs = []
-    # Create a list of all subtrees with label 'NP'.
-    np_lst = [t for t in tree.subtrees() if t.label() == 'NP']
-    # Step through the list. The noun chunks are trees with height 3.
-    for item in np_lst:
-        if item.height() == 3:
-            npcs.append(item)
-    print(f"npcs: {npcs}")
+    # Step through subtrees with label 'NP'.
+    for t in tree.subtrees(lambda x: x.label() == 'NP'):
+        # Noun chunks are trees with height 3.
+        if t.height() == 3:
+            npcs.append(t)
     return npcs
                
 if __name__ == "__main__":
