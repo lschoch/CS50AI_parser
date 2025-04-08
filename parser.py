@@ -19,12 +19,11 @@ NONTERMINALS = """
 S -> NP VP | NP VP Conj VP
 
 AP -> Adj | Adj AP
-NP -> N | Det N | AP NP | Det AP NP | N PP | 
-PP -> P NP | P NP PP
-VP -> V | V NP | V NP PP
+NP -> N | Det N | AP NP | Det AP NP | N PP 
+PP -> P NP | P NP PP | P NP VP
+VP -> V | V NP | Adv V NP PP | V Adv | Adv V
 """
-# I had a little moist red paint in the palm of my hand.
-
+# She never said a word until we were at the door here.
 grammar = nltk.CFG.fromstring(NONTERMINALS + TERMINALS)
 parser = nltk.ChartParser(grammar)
 
@@ -55,7 +54,7 @@ def main():
 
     # Print each tree with noun phrase chunks
     for tree in trees:
-        tree.pretty_print()
+        # tree.pretty_print()
 
         print("Noun Phrase Chunks")
         for np in np_chunk(tree):
@@ -70,6 +69,7 @@ def preprocess(sentence):
     character.
     """
     word_list = nltk.tokenize.wordpunct_tokenize(sentence)
+    # Use regex to retain only words with at least one alpha character.
     word_list = [w.lower() for w in word_list if re.match('[A-Za-z]+', w)]
     return word_list
 
@@ -81,23 +81,13 @@ def np_chunk(tree):
     noun phrases as subtrees.
     """
     npcs = []
-
-    """Function to recursively check for noun phrases in subtrees."""
-    def drill_down(subtree):
-        for t in subtree.subtrees():
-            # print(f"\nsubtree: {subtree} t: {t}")
-            if t.height() == 3:
-                npcs.append(t)
-                continue
-            if t.label() == 'NP' and t != subtree:
-                drill_down(t)
-
-    # Generate list of subtrees labelled 'NP'.
-    list = [t for t in tree.subtrees() if t.label() == 'NP']
-    # Driil down on each item to check for NP in subtrees.
-    for subtree in list:
-        drill_down(subtree)
-
+    # Create a list of all subtrees with label 'NP'.
+    np_lst = [t for t in tree.subtrees() if t.label() == 'NP']
+    # Step through the list. The noun chunks are trees with height 3.
+    for item in np_lst:
+        if item.height() == 3:
+            npcs.append(item)
+    print(f"npcs: {npcs}")
     return npcs
                
 if __name__ == "__main__":
